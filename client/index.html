@@ -1,0 +1,266 @@
+<html ng-app="app">
+	<head>
+		<title>Together</title>
+		<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.3/angular.min.js"></script>
+		<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.3/angular-route.min.js"></script>
+
+		<script>
+			let app = angular.module("app", ["ngRoute"]);
+			let loggedIn = 0;
+
+			function validationError(message)
+			{
+				var valErr = document.createElement("p");
+				valErr.innerText = "Validation Error: " + message;
+				valErr.className = "valErr popupMsg";
+				document.body.appendChild(valErr);
+				setTimeout(function(){valErr.style.opacity = 0;}, 100);
+				setTimeout(function(){valErr.remove()}, 5000);
+				console.log("Validation Error:", message);
+			}
+
+			function success(message)
+			{
+				var success = document.createElement("p");
+				success.innerText = message;
+				success.className = "successMsg popupMsg";
+				document.body.appendChild(success);
+				setTimeout(function(){success.style.opacity = 0;}, 100);
+				setTimeout(function(){success.remove()}, 5000);
+				console.log(message);
+			}
+
+			app.config(function ($routeProvider)
+			{
+				$routeProvider
+				.when("/", {templateUrl: "login_reg.html",
+					controller: "mainController"})
+				.when("/home", {templateUrl: "home.html",
+					controller: "mainController"})
+				.when("/availability", {templateUrl: "availability.html",
+					controller: "mainController"})
+				.when("/status", {templateUrl: "status.html",
+					controller: "mainController"})
+				.when("/status_empty", {templateUrl: "status_empty.html",
+					controller: "mainController"})
+				.when("/registration", {templateUrl: "registration.html",
+					controller: "mainController"})
+				.when("/profile", {templateUrl: "profile.html",
+					controller: "mainController"})
+				.when("/logout", {redirectTo: function(){
+					loggedIn = 0;
+						return "/";
+					}
+				})
+				.otherwise({redirectTo: "/"});
+			});
+
+			let first_name = undefined;
+			let selectedTimes = [];
+			let pendingTimes = [];
+
+			function genRandomTime(){
+				let time = ~~(Math.random()*10) + 7;
+				let ampm = (time < 12)?"AM":"PM";
+				return `${time%12 + 1}:00 ${ampm}`;
+			}
+
+			app.controller("mainController", ["$scope", "$routeParams", "$http", function($scope, $routeParams, $http)
+			{
+				$scope.rparam = $routeParams;
+				$scope.days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+				$scope.times = [];
+				$scope.pendingTimes = pendingTimes;
+
+				for(day of $scope.days)
+				{
+					$scope.times.push(genRandomTime());
+				}
+
+				if(!first_name)
+					first_name = "Chris";
+
+				console.log(first_name);
+
+				document.querySelector("#profile_link").innerText = first_name;
+
+				$scope.newUser = function(){
+					window.location = "#!/";
+				};
+
+				$scope.sendEmail = function(restaurant_name, group_time, email){
+					console.log(restaurant_name, group_time, email);
+					$http.post("/send_e", {restaurant_name: restaurant_name, group_time: group_time, email: email}).then(function(res){
+					});
+				};
+
+				$scope.submitReg = function(form_data){
+					console.log(form_data);
+					first_name = form_data.first_name;
+					window.location = "#!/home";
+				};
+
+				$scope.availableButton = function(index){
+					let el = document.querySelector(`#availableButton${index}`);
+					if(!selectedTimes[index]){
+						selectedTimes[index] = true;
+						el["style"]["background-color"] = "#00ff00";
+					}
+					else{
+						selectedTimes[index] = false;
+						el["style"]["background-color"] = "#fff";
+					}
+
+				};
+
+				$scope.confirmAvailability = function(){
+					console.log(selectedTimes);
+					console.log($scope.times);
+					
+					for(time in selectedTimes)
+					{
+						pendingTimes.push(`${$scope.days[time]} ${$scope.times[time]}`);
+					}
+					if(pendingTimes.length === 0)
+						window.location = "#!/status_empty";
+					else
+						window.location = "#!/status";
+				};
+
+				if(loggedIn == 0)
+				{
+					loggedIn = 1;
+				}
+				else if(loggedIn === 2){
+				}
+
+				let logout_link = document.querySelector("#logout_and_profile");
+				if(window.location.hash === "#!/" || window.location.hash === "#!/registration"){
+					logout_link.style.opacity = "0.0";
+				}else{
+					logout_link.style.opacity = "1.0";
+				}
+
+			}]);
+		</script>
+		<style type="text/css">
+			*{font-family: "futura";}
+			#wrapper{
+        		/*background-image: url("/image/bg1.jpg");*/
+				width: 80%;
+				height: 100vh;
+				margin: 0 auto;
+				display: flex;
+				justify-content: center;
+			}
+			#wrapper::after {
+				content: "";
+				background: url("/image/bg1.jpg");
+				background-repeat: no-repeat;
+				background-attachment: fixed;
+				background-position: center;
+				opacity: 0.5;
+				top: 0;
+				left: 0;
+				bottom: 0;
+				right: 0;
+				position: absolute;
+				z-index: -1;
+			}
+			pre{
+				display: inline-block;
+			}
+			.popupMsg{
+				padding: 20px;
+				background-color: #fff;
+				border: 1px #999 solid;
+				pointer-events: none;
+			}
+			.valErr
+			{
+				width: 100%;
+				position: fixed;
+				top: 50%;
+				color: #dd3333;
+				font-size: 40px;
+				transition: opacity 3000ms;
+				text-align: center;
+			}
+			.successMsg{
+				width: 100%;
+				position: fixed;
+				top: 20%;
+				color: #33dd33;
+				font-size: 40px;
+				transition: opacity 3000ms;
+				text-align: center;
+			}
+			.result
+			{
+				width: 100%;
+				position: fixed;
+				top: 20%;
+				color: #3333dd;
+				font-size: 40px;
+				transition: opacity 15000ms;
+				text-align: center;
+			}
+			.button
+			{
+				min-width: 50px;
+				height: 20px;
+				background-color: #fff;
+				border-radius: 50px;
+				cursor: default;
+				user-select: none;
+				text-align: center;
+				color: #222222;
+			}
+			.button:hover
+			{
+				background-color: #eeeeee;
+			}
+			.button:active
+			{
+				background-color: #000000;
+			}
+			#wrapper, #logout_and_profile
+			{
+				display: inline-block;
+				vertical-align: top;
+			}
+			#logout_and_profile
+			{
+				margin-top: 5vh;
+				margin-left: 5vw;
+				padding-right: 10px;
+				border-right: 1px solid #222;
+				min-height: 80vh;
+			}
+			#logout_and_profile a
+			{
+				display: block;
+				margin-bottom: 10px;
+			}
+			#view
+			{
+				margin-left: 5vw;
+			}
+		</style>
+
+	</head>
+	<body>
+	<div ng-app="app">
+		<div id="logout_and_profile">
+			<a id="home_link" href="#!/home">Home</a>
+			<a id="profile_link" href="#!/profile"></a>
+			<a id="find_group_sidelink" href="#!/availability">Find a Group</a>
+			<a id="status" href="#!/status">Status</a>
+			<a id="logout_link" href="#!/logout">Log Out</a>
+		</div>
+	<div id="wrapper">
+		<div id="view" ng-view=""></div>
+	</div>
+	</div>
+	</body>
+</html>

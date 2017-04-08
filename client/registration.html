@@ -1,0 +1,47 @@
+<h1>Sign Up</h1>
+  <label>First Name:</label><input ng-model="form_data.first_name" type="text" name="first_name"><br>
+  <label>Last Name:</label><input type="text" name="last_name"><br>
+  <label>Email:</label><input type="text" name="email"><br><br>
+  <h3>Your Attributes</h3>
+  This information is completely private, which means we don't sell it, and we don't share it with our users.<br>
+  Together only uses this information for group matchmaking purposes to ensure that you meet individuals with different backgrounds.<br>
+  <hr>
+  <label>Race:</label><select>
+  	<option value=""></option>
+  	<option value="White">White</option>
+  	<option value="Black">Black</option>
+  	<option value="Asian">Asian</option>
+  	<option value="Pacific Islander">Pacific Islander</option>
+  	<option value="Native American">Native American</option>
+  	<option value="Other">Other</option>
+  </select><br>
+  <label>Hispanic</label> Origin: <input type="checkbox" value="Hispanic"><br>
+   <label>Gender:</label><select>
+  	<option value=""></option>
+  	<option value="Male">Male</option>
+  	<option value="Female">Female</option>
+  	<option value="Other">Other</option>
+  </select><br>
+  <label>Sexual Orientation:</label><select>
+  	<option value=""></option>
+  	<option value="Heterosexual">Heterosexual</option>
+  	<option value="Homosexual">Homosexual</option>
+  	<option value="Bisexual">Bisexual</option>
+  	<option value="Other">Other</option>
+  </select><br>
+  <label>Religion:</label><select>
+  	<option value=""></option>
+  	<option value="Christian">Christian</option>
+  	<option value="Jewish">Jewish</option>
+  	<option value="Hindu">Hindu</option>
+  	<option value="Buddhism">Buddhist</option>
+  	<option value="Muslim">Muslim</option>
+  	<option value="Other">Other</option>
+  	<option value="">None</option>
+  </select><br>
+  <label>Age:</label><input type="text" name="age"><br>
+  <hr><br>
+  <label>Password:</label><input type="password" name="password">
+  <label>Confirm Password:</label><input type="password" name="confirm_password"><br><br><br>
+<button ng-click="submitReg(form_data)">Submit</button>
+<a href="#!/"><button>Cancel</button></a>

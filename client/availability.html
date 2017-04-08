@@ -1,0 +1,22 @@
+<div>
+<h1>Groups This Week</h1>
+<h2>Indicate which times you are available for.</h2>
+<style type="text/css">
+	td{
+		min-width: 250px;
+		height: 30px;
+	}
+</style>
+<table>
+<!--   <tr>
+    <th></th>
+    <th></th>
+  </tr> -->
+  <tr ng-repeat="day in days">
+  	<td>{{day}}</td>
+    <td>{{times[$index]}}</td>
+    <td><button class="button" ng-click="availableButton($index)" id="availableButton{{$index}}">I'm Available</button></td>
+  </tr>
+</table>
+<button class="button" ng-click="confirmAvailability()">Confirm</button>
+</div>
