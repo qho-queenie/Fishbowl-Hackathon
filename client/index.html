@@ -42,6 +42,8 @@
 					controller: "mainController"})
 				.when("/status", {templateUrl: "status.html",
 					controller: "mainController"})
+				.when("/status_assigned_group", {templateUrl: "status_assigned_group.html",
+					controller: "mainController"})
 				.when("/status_empty", {templateUrl: "status_empty.html",
 					controller: "mainController"})
 				.when("/registration", {templateUrl: "registration.html",
@@ -60,13 +62,35 @@
 			let selectedTimes = [];
 			let pendingTimes = [];
 			let assignedTime = "";
-			let restaurant_name = "Denny's";
+			let assignedGroup = [];
+			let restaurants = [
+				{name: "Applebees", logo_url: "/images/applebees.png"},
+				{name: "Buffalo Wings and Rings", logo_url: "/images/buffalo.png"},
+				{name: "Del Taco", logo_url: "/images/deltaco.png"},
+				{name: "Denny's", logo_url: "/images/dennys.png"},
+				{name: "Red Robin", logo_url: "/images/redrobin.png"},
+				{name: "Buffalo Wild Wings", logo_url: "/images/wildwings.png"}
+			];
+			let current_restaurant = 0;
 
 			function genRandomTime(){
 				let time = ~~(Math.random()*10) + 7;
 				let ampm = (time < 12)?"AM":"PM";
 				return `${time%12 + 1}:00 ${ampm}`;
-			}
+			};
+
+			function generateGroupString(){
+				let str = "";
+				let seperator = ", ";
+				for(let i = 0; i < assignedGroup.length; i++){
+					if(i === assignedGroup.length - 2)
+						seperator = " and ";
+					else if(i === assignedGroup.length - 1)
+						seperator = "";
+					str += assignedGroup[i] + seperator;
+				}
+				return str;
+			};
 
 			app.controller("mainController", ["$scope", "$routeParams", "$http", function($scope, $routeParams, $http)
 			{
@@ -74,8 +98,11 @@
 				$scope.days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 				$scope.times = [];
 				$scope.pendingTimes = pendingTimes;
-				$scope.restaurant_name = restaurant_name;
+				$scope.allRestaurants = restaurants;
+				$scope.restaurant = restaurants[current_restaurant];
 				$scope.assignedTime = assignedTime;
+				$scope.assignedGroup = assignedGroup;
+				$scope.assignedGroupString = generateGroupString();
 
 				for(day of $scope.days)
 				{
@@ -85,12 +112,17 @@
 				if(!first_name)
 					first_name = "Chris";
 
-				console.log(first_name);
-
 				document.querySelector("#profile_link").innerText = first_name;
 
 				$scope.newUser = function(){
 					window.location = "#!/";
+				};
+
+				$scope.selectPartner = function(index){
+					document.querySelector(`#partnerButton${current_restaurant}`).style.border = "3px solid #fff";
+					document.querySelector(`#partnerButton${index}`).style.border = "3px solid #00ff00";
+					current_restaurant = index;
+					document.querySelector("#currentPartner").innerText = restaurants[current_restaurant].name;
 				};
 
 				$scope.sendEmail = function(restaurant_name, group_time, email){
@@ -127,30 +159,37 @@
 						pendingTimes.push(`${$scope.days[time]} ${$scope.times[time]}`);
 					}
 					if(pendingTimes.length === 0){
+						document.querySelector("#status").href = "#!/status_empty";
 						window.location = "#!/status_empty";
 					}
 					else{
+						document.querySelector("#status").href = "#!/status";
 						window.location = "#!/status";
-						setTimeout(assignGroup, 10000);
+						setTimeout($scope.assignGroup, 10000);
 					}
 				};
 
 				$scope.assignGroup = function(){
-					$scope.group =  (function(){
-						let arr = [];
-						let groupSize = ~~(Math.random()*3) + 2;
-						for(let i = 0; i < groupSize; i++)
-						{
-							arr.push( dummy_data_names[~~(Math.random()*99)] );
-						}
-						return arr;
-					})();
+					assignedGroup = [];
+					let tempArr = dummy_data_names.slice();
+					let groupSize = ~~(Math.random()*3) + 2;
+					for(let i = 0; i < groupSize; i++)
+					{
+						assignedGroup.push( tempArr.pop(~~(Math.random()*99)) );
+					}
+
 					assignedTime = pendingTimes[ ~~(Math.random()*(selectedTimes.length-1)) ];
-					$scope.sendEmail($scope.restaurant_name, assignedTime, "chris.rollins.dev@gmail.com");
+					$scope.sendEmail(restaurants[current_restaurant].name, assignedTime, "chris.rollins.dev@gmail.com");
+
+					if(window.location.hash === "#!/status"){
+						window.location = "#!/status_assigned_group";
+					}else{
+						document.querySelector("#status").href = "#!/status_assigned_group";	
+						document.querySelector("#status_notification").style.display = "inline-block";
+					}
 				};
 
-				if(loggedIn == 0)
-				{
+				if(loggedIn == 0){
 					loggedIn = 1;
 				}
 				else if(loggedIn === 2){
@@ -161,6 +200,11 @@
 					logout_link.style.opacity = "0.0";
 				}else{
 					logout_link.style.opacity = "1.0";
+				}
+
+				if(window.location.hash === "#!/status" || window.location.hash === "#!/status_assigned_group"){
+					document.querySelector("#status_notification").style.display = "none";
+					document.querySelector("#status").href = "#!/status_empty";
 				}
 
 			}]);
@@ -174,6 +218,7 @@
 				margin: 0 auto;
 				display: flex;
 				justify-content: center;
+				transition: filter 240ms;
 			}
 			#wrapper::after {
 				content: "";
@@ -259,14 +304,32 @@
 				border-right: 1px solid #222;
 				min-height: 80vh;
 			}
-			#logout_and_profile a
+			#logout_and_profile p
 			{
-				display: block;
-				margin-bottom: 10px;
+				/*line-height: 30px;*/
 			}
 			#view
 			{
 				margin-left: 5vw;
+			}
+			@keyframes sn_anim
+			{
+				0% {color: #fff; font-size: 2.2em; top: 5px;}
+				50% {color: #ff0000; font-size: 1.2em; top: 0px;}
+				100% {color: #fff; font-size: 2.2em; top: 5px;}
+			}
+			#status_notification
+			{
+				position: relative;
+				left: 10px;
+				line-height: 1px;
+				animation-name: sn_anim;
+				animation-duration: 700ms;
+				animation-iteration-count: infinite;
+				animation-play-state: running;
+				color: #ff0000;
+				display: none;
+				font-weight: bold;
 			}
 		</style>
 
@@ -274,11 +337,11 @@
 	<body>
 	<div ng-app="app">
 		<div id="logout_and_profile">
-			<a id="home_link" href="#!/home">Home</a>
-			<a id="profile_link" href="#!/profile"></a>
-			<a id="find_group_sidelink" href="#!/availability">Find a Group</a>
-			<a id="status" href="#!/status">Status</a>
-			<a id="logout_link" href="#!/logout">Log Out</a>
+			<p><a id="home_link" href="#!/home">Home</a></p>
+			<p><a id="profile_link" href="#!/profile"></a></p>
+			<p><a id="find_group_sidelink" href="#!/availability">Find a Group</a></p>
+			<p><a id="status" href="#!/status_empty">Status</a><span id="status_notification">!</span></p>
+			<p><a id="logout_link" href="#!/logout">Log Out</a></p>
 		</div>
 	<div id="wrapper">
 		<div id="view" ng-view=""></div>

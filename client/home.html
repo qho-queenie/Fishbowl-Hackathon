@@ -1,5 +1,16 @@
 <div>
 <h1>Welcome</h1>
 <h3>Partner Restaurants</h3>
+<br>
+<style type="text/css">
+.partnerButton{
+  border: 3px solid #fff;
+}
+</style>
+<div style="display: inline-block;" ng-repeat="res in allRestaurants">
+<button class="partnerButton" id="partnerButton{{$index}}"><img ng-click="selectPartner($index)" src="{{res.logo_url}}"></button>
+</div>
+<br><br><br><br><br>
+<h3 id="currentPartner"></h3>
 <a href="#!/availability">Find a Group</a> - Choose from available times to be placed in a group and meet new people.
 </div>
