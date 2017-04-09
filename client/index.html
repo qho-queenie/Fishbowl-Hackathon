@@ -212,28 +212,28 @@
 		<style type="text/css">
 			*{font-family: "futura";}
 			#wrapper{
-        		/*background-image: url("/image/bg1.jpg");*/
 				width: 80%;
-				height: 100vh;
+				height: 77vh;
 				margin: 0 auto;
 				display: flex;
 				justify-content: center;
 				transition: filter 240ms;
+				overflow: hidden;
 			}
-			#wrapper::after {
+/*			#wrapper::after {
 				content: "";
-				background: url("/image/bg1.jpg");
+				background-image: url("/images/EatingTogether1.jpg");
 				background-repeat: no-repeat;
 				background-attachment: fixed;
 				background-position: center;
-				opacity: 0.5;
+				opacity: 0.3;
 				top: 0;
 				left: 0;
 				bottom: 0;
 				right: 0;
 				position: absolute;
 				z-index: -1;
-			}
+			}*/
 			pre{
 				display: inline-block;
 			}
@@ -298,11 +298,13 @@
 			}
 			#logout_and_profile
 			{
-				margin-top: 5vh;
+				padding-top: 5vh;
 				margin-left: 5vw;
+				margin-top: -25px;
 				padding-right: 10px;
 				border-right: 1px solid #222;
-				min-height: 80vh;
+				min-height: 75vh;
+				background-color: #fff;
 			}
 			#logout_and_profile p
 			{
@@ -331,6 +333,15 @@
 				display: none;
 				font-weight: bold;
 			}
+			.bottom_img
+			{
+				margin: -10px;
+				padding: 0px;
+			}
+			#bottom_imgs
+			{
+				margin-left: 4vw;
+			}
 		</style>
 
 	</head>
@@ -343,9 +354,17 @@
 			<p><a id="status" href="#!/status_empty">Status</a><span id="status_notification">!</span></p>
 			<p><a id="logout_link" href="#!/logout">Log Out</a></p>
 		</div>
-	<div id="wrapper">
+		<div id="wrapper">
 		<div id="view" ng-view=""></div>
+
+
+		</div>
+		<div id="bottom_imgs">
+		  <img class="bottom_img" src="/images/EatingTogether2.jpg">
+		  <img class="bottom_img" src="/images/EatingTogether2.jpg">
+		  <img class="bottom_img" src="/images/EatingTogether2.jpg">
+		</div>
 	</div>
-	</div>
+
 	</body>
 </html>
