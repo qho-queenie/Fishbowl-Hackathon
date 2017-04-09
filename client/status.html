@@ -1,4 +1,9 @@
 <div>
 	<h1>Pending Groups:</h1>
-	{{pendingTimes}}
+	<h3>These are the times you have indicated available. When groups are created you will be assigned one of these times.</h3>
+	<table>
+		<tr ng-repeat="time in pendingTimes">
+			<td>{{time}}</td>
+		</tr>
+	</table>
 </div>

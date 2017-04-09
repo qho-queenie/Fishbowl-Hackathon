@@ -3,20 +3,27 @@
 <h2>Indicate which times you are available for.</h2>
 <style type="text/css">
 	td{
-		min-width: 250px;
+		min-width: 225px;
 		height: 30px;
+		display: inline-flex;
+	}
+	.button_td
+	{
+		justify-content: center;
 	}
 </style>
 <table>
-<!--   <tr>
-    <th></th>
-    <th></th>
-  </tr> -->
   <tr ng-repeat="day in days">
   	<td>{{day}}</td>
-    <td>{{times[$index]}}</td>
-    <td><button class="button" ng-click="availableButton($index)" id="availableButton{{$index}}">I'm Available</button></td>
+    <td><span>{{times[$index]}}</span></td>
+    <td class="button_td"><button class="button" ng-click="availableButton($index)" id="availableButton{{$index}}">I'm Available</button></td>
   </tr>
 </table>
-<button class="button" ng-click="confirmAvailability()">Confirm</button>
+<table>
+<tr>
+<td></td>
+<td></td>
+<td class="button_td"><button class="button" ng-click="confirmAvailability()">Confirm</button></td>
+</tr>
+<table>
 </div>

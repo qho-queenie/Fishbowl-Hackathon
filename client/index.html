@@ -3,6 +3,7 @@
 		<title>Together</title>
 		<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.3/angular.min.js"></script>
 		<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.3/angular-route.min.js"></script>
+		<script type="text/javascript" src="dummydata.js"></script>
 
 		<script>
 			let app = angular.module("app", ["ngRoute"]);
@@ -58,6 +59,8 @@
 			let first_name = undefined;
 			let selectedTimes = [];
 			let pendingTimes = [];
+			let assignedTime = "";
+			let restaurant_name = "Denny's";
 
 			function genRandomTime(){
 				let time = ~~(Math.random()*10) + 7;
@@ -71,6 +74,8 @@
 				$scope.days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 				$scope.times = [];
 				$scope.pendingTimes = pendingTimes;
+				$scope.restaurant_name = restaurant_name;
+				$scope.assignedTime = assignedTime;
 
 				for(day of $scope.days)
 				{
@@ -121,10 +126,27 @@
 					{
 						pendingTimes.push(`${$scope.days[time]} ${$scope.times[time]}`);
 					}
-					if(pendingTimes.length === 0)
+					if(pendingTimes.length === 0){
 						window.location = "#!/status_empty";
-					else
+					}
+					else{
 						window.location = "#!/status";
+						setTimeout(assignGroup, 10000);
+					}
+				};
+
+				$scope.assignGroup = function(){
+					$scope.group =  (function(){
+						let arr = [];
+						let groupSize = ~~(Math.random()*3) + 2;
+						for(let i = 0; i < groupSize; i++)
+						{
+							arr.push( dummy_data_names[~~(Math.random()*99)] );
+						}
+						return arr;
+					})();
+					assignedTime = pendingTimes[ ~~(Math.random()*(selectedTimes.length-1)) ];
+					$scope.sendEmail($scope.restaurant_name, assignedTime, "chris.rollins.dev@gmail.com");
 				};
 
 				if(loggedIn == 0)
